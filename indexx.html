@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Valentine</title>
+
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  background-color: #ffd6e8;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+}
+
+/* FIREWORKS */
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* CONTAINER */
+.container {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* HEART */
+.heart {
+  position: absolute;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-45deg);
+  width: 50px;
+  height: 50px;
+  background: red;
+  animation: pulse 1.5s infinite;
+}
+.heart::before,
+.heart::after {
+  content: "";
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background: red;
+  border-radius: 50%;
+}
+.heart::before { top: -25px; left: 0; }
+.heart::after { left: 25px; top: 0; }
+
+@keyframes pulse {
+  0% { transform: translateX(-50%) rotate(-45deg) scale(1); }
+  50% { transform: translateX(-50%) rotate(-45deg) scale(1.1); }
+  100% { transform: translateX(-50%) rotate(-45deg) scale(1); }
+}
+
+/* TEXTS */
+.name {
+  color: #ff1493;
+  font-size: 26px;
+  font-family: "Benguiat Bk BT", serif;
+}
+
+h1 {
+  color: #ff1493;
+  font-size: 32px;
+  font-family: "Benguiat Bk BT", serif;
+  margin-bottom: 30px;
+}
+
+/* BOX */
+.box {
+  background-color: #ffe6f0;
+  padding: 25px 35px;
+  border-radius: 25px;
+  display: inline-block;
+}
+
+.buttons {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  justify-content: center;
+}
+
+button {
+  padding: 10px 22px;
+  font-size: 16px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+}
+
+.yes { background: #ff69b4; color: white; }
+.no { background: #ffc0cb; }
+
+.try-no {
+  font-size: 13px;
+  color: #666;
+  margin-top: 12px;
+  transition: transform 0.2s ease;
+}
+
+/* BIG YAY */
+.yay-row {
+  position: fixed;
+  white-space: nowrap;
+  font-size: 18vh;
+  font-weight: bold;
+  color: red;
+  left: -120%;
+  animation: moveYay 6s linear infinite;
+  z-index: 3;
+}
+
+@keyframes moveYay {
+  from { left: -120%; }
+  to { left: 120%; }
+}
+
+/* CROSS */
+.cross {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  font-size: 120px;
+  color: red;
+  animation: pop 0.4s forwards;
+  z-index: 5;
+}
+@keyframes pop {
+  0% { transform: translate(-50%, -50%) scale(0); }
+  70% { transform: translate(-50%, -50%) scale(1.2); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+/* FINAL MESSAGE */
+.final {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: #ffd6e8;
+  z-index: 10;
+  text-align: center;
+  padding: 40px;
+}
+.final p {
+  font-size: 20px;
+  color: #ff1493;
+  max-width: 800px;
+  margin: auto;
+  white-space: pre-line;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="fireworks"></canvas>
+
+<div class="container" id="main">
+  <div class="heart"></div>
+  <div class="name">chinmayiii</div>
+  <h1>Will you be my valentine?</h1>
+
+  <div class="box">
+    <div class="buttons">
+      <button class="yes" id="yesBtn">Yes</button>
+      <span>or</span>
+      <button class="no" id="noBtn">No</button>
+    </div>
+    <div class="try-no" id="tryText">(try saying no)</div>
+  </div>
+</div>
+
+<div class="final" id="final">
+<p>
+i love youuuu veryyyyyyyy muchhh, this is gonna be our first valentine’s together but sadly in middle of an academic crisis. But i’ll try my best to keep you entertained ;) thank you for saying yes, mademoiselle. Enjoy the ride heehehehe.
+
+Roro✌🏻
+</p>
+</div>
+
+<audio id="sound" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3"></audio>
+
+<script>
+const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
+const tryText = document.getElementById("tryText");
+const sound = document.getElementById("sound");
+
+/* hover text */
+noBtn.onmouseenter = () => tryText.style.transform = "translateX(40px)";
+noBtn.onmouseleave = () => tryText.style.transform = "translateX(0)";
+
+/* NO click cross */
+noBtn.onclick = () => {
+  const c = document.createElement("div");
+  c.className = "cross";
+  c.textContent = "❌";
+  document.body.appendChild(c);
+  setTimeout(() => c.remove(), 1200);
+};
+
+/* YES CHAOS */
+yesBtn.onclick = () => {
+  yesBtn.disabled = true;
+  noBtn.disabled = true;
+  sound.play();
+
+  for (let i = 0; i < 3; i++) {
+    const y = document.createElement("div");
+    y.className = "yay-row";
+    y.style.top = `${20 + i * 25}%`;
+    y.textContent = "YAYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY";
+    document.body.appendChild(y);
+  }
+
+  startFireworks();
+
+  setTimeout(() => {
+    document.getElementById("main").style.display = "none";
+    document.getElementById("final").style.display = "block";
+  }, 7000);
+};
+
+/* FIREWORKS */
+const canvas = document.getElementById("fireworks");
+const ctx = canvas.getContext("2d");
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+
+function firework() {
+  const x = Math.random() * canvas.width;
+  const y = Math.random() * canvas.height / 2;
+  for (let i = 0; i < 40; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const s = Math.random() * 6;
+    let life = 30;
+    const col = ["red", "pink", "gold"][Math.floor(Math.random()*3)];
+    const iv = setInterval(() => {
+      ctx.fillStyle = col;
+      ctx.beginPath();
+      ctx.arc(x + Math.cos(a)*s*life, y + Math.sin(a)*s*life, 2, 0, Math.PI*2);
+      ctx.fill();
+      life--;
+      if (life <= 0) clearInterval(iv);
+    }, 16);
+  }
+}
+
+function startFireworks() {
+  setInterval(() => {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    firework();
+  }, 600);
+}
+</script>
+
+</body>
+</html>
